@@ -37,7 +37,7 @@ $.fn.twitterResult.events = {
   refresh: function( e ) {
     // indicate that the results are refreshing
     var elem = $( this ).addClass( "refreshing" );
-    var API = "NONE OF YOUR BUSINESS!"
+    var API = "8072676612439244c143e34301a256"
 
     elem.find( "p.meetup" ).remove();
     results.append( "<p class='loading'>Loading...</p>" );
@@ -57,7 +57,7 @@ $.fn.twitterResult.events = {
     elem.find( "p.loading" ).remove();
     $.each( results, function( i, result ) {
       var meetup = "<p class= 'meetup'>" +  "<a href='" + result.event_url + "'>" + result.name + "</a>" + "</p>"
-      ; 
+      ;
 
       elem.append( meetup );
     });
@@ -96,7 +96,7 @@ $.fn.twitterResult.events = {
 
 };
 
-$( "#twitter" ).on( "getResults", function( e, term ) {
+$( "#meetup" ).on( "getResults", function( e, term ) {
     // make sure we don't have a box for this term already
   var search_terms = [];
   if ( !search_terms[ term ] ) {
@@ -121,36 +121,44 @@ $( "#twitter" ).on( "getResults", function( e, term ) {
 }).on( "getTrends", function( e ) {
     var elem = $( this );
     console.log(elem)
-    var API = "NONE OF YOUR BUSINESS!"
+    var API = "8072676612439244c143e34301a256"
     var topic = $('#search_term').val();
 
-    $.getJSON( "https://api.meetup.com/2/open_events?key=" + API + "&zip=" + topic +"&sign=true" + "&callback=?", 
+    $.getJSON( "https://api.meetup.com/2/open_events?key=" + API + "&zip=" + topic +"&sign=true" + "&callback=?",
       function( json ) {
         var results = json.results;
         $.each( results, function( i, result ) {
-            elem.trigger( "getResults", [ result ] );
-        });
+         var meetup = "<p class= 'meetup'>" +  "<a href='" + result.event_url + "'>" + result.name + "</a>" + "</p>"
+         elem.trigger( "getResults", [ meetup ] );
+      ;
+
+      elem.append( meetup );
+    });
+
+        // $.each( results, function( i, result ) {
+        //     elem.trigger( "getResults", [ result ] );
+        // });
     });
 });
 
 $( "form" ).submit(function( event ) {
     var term = $( "#search_term" ).val();
-    $( "#twitter" ).trigger( "getResults", [ term ] );
+    $( "#meetup" ).trigger( "getResults", [ term ] );
     event.preventDefault();
 });
 
 $( "#get_trends" ).click(function() {
-    $( "#twitter" ).trigger( "getTrends" );
+    $( "#meetup" ).trigger( "getTrends" );
 });
 $.each([ "refresh", "expand", "collapse" ], function( i, ev ) {
     $( "#" + ev ).click( function( e ) {
-        $( "#twitter div.results" ).trigger( ev );
+        $( "#meetup div.results" ).trigger( ev );
     });
 });
 
 $( "#remove" ).click(function( e ) {
     if ( confirm( "Remove all results?" ) ) {
-        $( "#twitter div.results" ).trigger( "remove", [ true ] );
+        $( "#meetup div.results" ).trigger( "remove", [ true ] );
     }
 });
 });
