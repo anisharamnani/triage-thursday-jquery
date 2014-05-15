@@ -8,7 +8,7 @@ $(document).ready(function(){
       var term = settings.term;
 
       results.find( "span.search_term" ).text( term );
-      $.each([ "refresh", "populate", "remove", "collapse", "expand" ], function( i, ev ) {
+      $.each([ "populate", "remove", "collapse", "expand" ], function( i, ev ) {
         results.on( ev, {
             term: term
         }, $.fn.twitterResult.events[ ev ] );
@@ -26,7 +26,6 @@ $(document).ready(function(){
 
 $.fn.twitterResult.createActions = function() {
   return $( "<ul class='actions' />" ).append(
-    "<li class='refresh'>Refresh</li>" +
     "<li class='remove'>Remove</li>" +
     "<li class='collapse'>Collapse</li>"
   );
@@ -34,21 +33,6 @@ $.fn.twitterResult.createActions = function() {
 
 $.fn.twitterResult.events = {
 
-  refresh: function( e ) {
-    // indicate that the results are refreshing
-    var elem = $( this ).addClass( "refreshing" );
-    var API = "8072676612439244c143e34301a256"
-
-    elem.find( "p.meetup" ).remove();
-    results.append( "<p class='loading'>Loading...</p>" );
-
-    // get the twitter data using jsonp
-    $.getJSON( "https://api.meetup.com/2/open_events?key=" + API + "&zip=" + escape( e.data.term ) +"&sign=true" + "&callback=?",
-
-     function( json ) {
-      elem.trigger( "populate", [ json ] );
-    });
-  },
 
   populate: function( e, json ) {
     var results = json.results;
@@ -112,9 +96,6 @@ $( "#meetup" ).on( "getResults", function( e, term ) {
             "term": term
         });
 
-        // load the content using the "refresh"
-        // custom event that we bound to the results container
-        results.trigger( "refresh" );
 
         search_terms[ term ] = 1;
     }
@@ -126,18 +107,17 @@ $( "#meetup" ).on( "getResults", function( e, term ) {
 
     $.getJSON( "https://api.meetup.com/2/open_events?key=" + API + "&zip=" + topic +"&sign=true" + "&callback=?",
       function( json ) {
-        var results = json.results;
-        $.each( results, function( i, result ) {
-         var meetup = "<p class= 'meetup'>" +  "<a href='" + result.event_url + "'>" + result.name + "</a>" + "</p>"
-         elem.trigger( "getResults", [ meetup ] );
-      ;
+        //var results = json.results;
+    	var results = new Array(10);    
+	$.each( results, function( i, result ) {
+       //  var meetup = "<p class= 'meetup'>" +  "<a href='" + result.event_url + "'>" + result.name + "</a>" + "</p>"
+         var meetup = "<p class='meetup'><a href='#'>link" + i + "</a>"
+		 elem.trigger( "getResults", [ meetup ] );
+      
 
       elem.append( meetup );
     });
 
-        // $.each( results, function( i, result ) {
-        //     elem.trigger( "getResults", [ result ] );
-        // });
     });
 });
 
@@ -150,7 +130,7 @@ $( "form" ).submit(function( event ) {
 $( "#get_trends" ).click(function() {
     $( "#meetup" ).trigger( "getTrends" );
 });
-$.each([ "refresh", "expand", "collapse" ], function( i, ev ) {
+$.each([  "expand", "collapse" ], function( i, ev ) {
     $( "#" + ev ).click( function( e ) {
         $( "#meetup div.results" ).trigger( ev );
     });
